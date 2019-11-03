@@ -122,7 +122,7 @@ app.post(
         if (!user) {
           return res
             .status(400)
-            .json({ errors: [{ message: 'Invalid email or password' }] });
+            .json({ errors: [{ msg: 'Invalid email or password' }] });
         }
 
         // Check password
@@ -130,7 +130,7 @@ app.post(
         if (!match) {
           return res
             .status(400)
-            .json({ errors: [{ message: 'Invalid email or password' }] });
+            .json({ errors: [{ msg: 'Invalid email or password' }] });
         }
 
         // Generate and return a JWT token
