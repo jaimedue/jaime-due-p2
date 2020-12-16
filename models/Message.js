@@ -1,13 +1,9 @@
 import mongoose from 'mongoose';
 
-const QuestionSchema = new mongoose.Schema({
-    user: {
+const MessageSchema = new mongoose.Schema({
+    sender: {
         type: 'ObjectId',
         ref: 'User'
-    },
-    title: {
-        type: String,
-        required: true
     },
     body: {
         type: String,
@@ -19,6 +15,6 @@ const QuestionSchema = new mongoose.Schema({
     }
 });
 
-const Question = mongoose.model('question', QuestionSchema);
+const Message = mongoose.model('message', MessageSchema);
 
-export default Question;
+export default Message;

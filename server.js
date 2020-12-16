@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import config from 'config';
 import User from './models/User';
+import Message from './models/Message';
 import auth from './middleware/auth';
 
 // Initialize express application
@@ -159,6 +160,49 @@ const returnToken = (user, res) => {
     }
   );
 };
+
+// Message endpoints
+/**
+ * @route POST api/messages
+ * @desc Create message
+ */
+app.post(
+  '/api/messages',
+  [
+    auth,
+    [
+      check('body', 'Body cannot be left empty')
+        .not()
+        .isEmpty()
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResults(req);
+    if(!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+    } else {
+      const { body } = req.body;
+      try {
+        // Get the sender
+        const sender = await User.findById(req.user.id);
+
+        // Create a new post
+        const message = new Message({
+          sender: user.id,
+          body: body
+        });
+
+        // Save to the db and return
+        await message.save();
+
+        res.json(message);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+      }
+    }
+  }
+);
 
 // Connection listener
 const port = 5000;
