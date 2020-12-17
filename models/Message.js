@@ -5,13 +5,21 @@ const MessageSchema = new mongoose.Schema({
         type: 'ObjectId',
         ref: 'User'
     },
-    body: {
+    name: {
+        type: String,
+        required: true,
+    },
+    email: {
         type: String,
         required: true
     },
-    date: {
-        type: Date,
-        default: Date.now
+    phone: {
+        type: String,
+        required: true
+    },
+    notes: {
+        type: String,
+        required: false
     }
 });
 

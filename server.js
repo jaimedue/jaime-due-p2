@@ -171,7 +171,13 @@ app.post(
   [
     auth,
     [
-      check('body', 'Body cannot be left empty')
+      check('name', 'Name cannot be left empty')
+        .not()
+        .isEmpty(),
+      check('email', 'Email cannot be left empty')
+        .not()
+        .isEmpty(),
+      check('phone', 'Phone cannot be left empty')
         .not()
         .isEmpty()
     ]
@@ -181,7 +187,7 @@ app.post(
     if(!errors.isEmpty()) {
       res.status(400).json({ errors: errors.array() });
     } else {
-      const { body } = req.body;
+      const { name, email, phone, notes } = req.body;
       try {
         // Get the sender
         const sender = await User.findById(req.user.id);
@@ -189,12 +195,13 @@ app.post(
         // Create a new post
         const message = new Message({
           sender: sender.id,
-          body: body
+          name: name,
+          email: email,
+          phone: phone,
+          notes: notes
         });
-
         // Save to the db and return
         await message.save();
-
         res.json(message);
       } catch (error) {
         console.error(error);
@@ -211,7 +218,7 @@ app.post(
 
  app.get('/api/messages', auth, async (req, res) => {
    try {
-     const messages = await Message.find().sort({ date: -1 });
+     const messages = await Message.find().sort({ name: 1 });
 
      res.json(messages);
    } catch (error) {
@@ -219,6 +226,26 @@ app.post(
      res.status(500).send('Server error');
    }
  });
+
+ /**
+  * @route GET api/messages/:id
+  * @desc Get message
+  */
+
+  app.get('/api/messages/:id', auth, async (req, res) => {
+    try {
+      const message = await Message.findById(req.params.id);
+
+      if (!message) {
+        return res.status(404).json({ msg: 'Message not found' });
+      }
+
+      res.json(message);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    }
+  });
 
  /**
   * @route DELETE api/messages/:id
