@@ -211,9 +211,36 @@ app.post(
 
  app.get('/api/messages', auth, async (req, res) => {
    try {
-     const messages = await Message.find().sort({ date });
+     const messages = await Message.find().sort({ date: -1 });
 
      res.json(messages);
+   } catch (error) {
+     console.error(error);
+     res.status(500).send('Server error');
+   }
+ });
+
+ /**
+  * @route DELETE api/messages/:id
+  * @desc Delete a message
+  * 
+  */
+ app.delete('/api/messages/:id', auth, async (req, res) => {
+   try {
+     const message = await Message.findById(req.params.id);
+
+     //Make sure the message was found
+     if (!message) {
+       return res.status(404).json({ msg: 'Message not found' });
+     }
+
+     if(message.sender.toString() !== req.user.id) {
+       return res.status(401).json({ msg: 'User not authorized' });
+     }
+
+     await message.remove();
+
+     res.json({ msg: 'Message deleted' });
    } catch (error) {
      console.error(error);
      res.status(500).send('Server error');
