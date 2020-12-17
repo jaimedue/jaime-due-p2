@@ -177,7 +177,7 @@ app.post(
     ]
   ],
   async (req, res) => {
-    const errors = validationResults(req);
+    const errors = validationResult(req);
     if(!errors.isEmpty()) {
       res.status(400).json({ errors: errors.array() });
     } else {
@@ -188,7 +188,7 @@ app.post(
 
         // Create a new post
         const message = new Message({
-          sender: user.id,
+          sender: sender.id,
           body: body
         });
 
@@ -203,6 +203,22 @@ app.post(
     }
   }
 );
+
+/**
+ * @route GET api/messages
+ * @desc Get messages
+ */
+
+ app.get('/api/messages', auth, async (req, res) => {
+   try {
+     const messages = await Message.find().sort({ date });
+
+     res.json(messages);
+   } catch (error) {
+     console.error(error);
+     res.status(500).send('Server error');
+   }
+ });
 
 // Connection listener
 const port = 5000;
